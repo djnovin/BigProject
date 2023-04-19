@@ -1,0 +1,22 @@
+FROM node:latest
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install app dependencies
+COPY package.json .
+
+# Install app dependencies
+RUN pnpm install
+
+# Bundle app source
+COPY . .
+
+# Expose port 8002
+EXPOSE 8002
+
+# Run the app
+CMD [ "pnpm", "dev" ]

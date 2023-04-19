@@ -1,0 +1,94 @@
+services:
+  # Client
+  client: 
+    restart: always
+    build:
+      context: ./apps/client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/client:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - PORT=3000
+      - HOST=localhost
+    networks:
+      - my-network
+  
+  # User Service
+  user-service:
+    restart: always
+    build:
+      context: ./apps/user-service
+      dockerfile: Dockerfile.dev
+    environment:
+      - PORT=8001
+      - HOST=localhost
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./apps/user-service/src:/usr/src/app/src
+    depends_on:
+      - db
+      - redis
+    networks:
+      - my-network
+
+  # Auth Service
+  auth-service:
+    restart: always
+    build:
+      context: ./apps/auth-service
+      dockerfile: Dockerfile.dev
+    environment:
+      - PORT=8002
+      - HOST=localhost
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./apps/auth-service/src:/usr/src/app/src
+    depends_on:
+      - db
+      - redis
+    networks:
+      - my-network
+
+  # NGINX
+  proxy:
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:80"
+    links:
+      - auth-service
+      - user-service
+    networks:
+      - my-network
+
+  # Redis
+  redis:
+    image: redis
+    ports: 
+      - "6379:6379"
+    networks:
+      - my-network
+
+  # Postgres
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - my-network
+
+networks: 
+  my-network:
+    driver: bridge
+
