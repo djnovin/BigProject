@@ -25,6 +25,13 @@ services:
     environment:
       - PORT=8001
       - HOST=localhost
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
     ports:
       - "8001:8001"
     volumes:
