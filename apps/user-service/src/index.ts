@@ -11,6 +11,8 @@ const app = express();
 
 const redis = new Redis();
 
+
+
 app.get("/api/v1/users", (req, res) => {
   res.json({
     users: [
